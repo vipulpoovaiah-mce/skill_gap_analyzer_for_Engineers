@@ -24,6 +24,31 @@ if (!fs.existsSync('uploads')) {
 app.use(express.static(path.join(__dirname, 'Frontend')));
 app.use(express.json());
 
+async function fetchMarketDemandWithGemini(goal) {
+    const prompt = `
+        You are a career development expert. For the target role: "${goal}", identify the top 10 most essential technical skills and 4 highly-rated online courses or certifications.
+        Return the response strictly as a JSON object with the following keys:
+        - "skills": A list of the top 10 technical skills (strings).
+        - "courses": A list of 4 objects, each with "name" and "provider" (e.g., {"name": "Machine Learning by Andrew Ng", "provider": "Coursera"}).
+
+        Industry: Technology/Data/Business
+    `;
+
+    try {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        let resultText = response.text();
+        resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(resultText);
+    } catch (error) {
+        console.error("Gemini Market Demand Error:", error);
+        // Fallback to basic skills if AI fails
+        return {
+            skills: ["Communication", "Problem Solving", "Adaptability"],
+            courses: []
+        };
+    }
+}
 async function parseResumeWithGemini(text) {
     const prompt = `
         You are an expert resume parser. Analyze the following resume text and extract key information.
@@ -96,42 +121,57 @@ app.post('/parse-resume', upload.single('resume'), async (req, res) => {
     }
 });
 
-app.post('/analyze', (req, res) => {
+app.post('/analyze', async (req, res) => {
     const { goal, skills, scores, experience, hobbies } = req.body;
 
-    const pythonProcess = spawn('py', [path.join(__dirname, 'Backend/analyze_cli.py')]);
+    try {
+        // 1. Get market demand and courses for the goal
+        const marketDemand = await fetchMarketDemandWithGemini(goal || "Software Engineer");
 
-    let result = '';
-    let errorOutput = '';
+        // 2. Spawn python analysis
+        const pythonProcess = spawn('py', [path.join(__dirname, 'Backend/analyze_cli.py')]);
 
-    pythonProcess.stdout.on('data', (data) => {
-        result += data.toString();
-    });
+        let result = '';
+        let errorOutput = '';
 
-    pythonProcess.stderr.on('data', (data) => {
-        errorOutput += data.toString();
-    });
+        pythonProcess.stdout.on('data', (data) => {
+            result += data.toString();
+        });
 
-    pythonProcess.on('close', (code) => {
-        if (code !== 0) {
-            console.error(`Python error: ${errorOutput}`);
-            return res.status(500).json({ error: 'Failed to generate resume analysis.' });
-        }
-        res.json({ result: result.trim() });
-    });
+        pythonProcess.stderr.on('data', (data) => {
+            errorOutput += data.toString();
+        });
 
-    const safeGoal = (goal && goal.trim() !== '') ? goal.replace(/\n/g, ' ') : 'Not Specified';
-    const safeSkills = (skills && skills.trim() !== '') ? skills.replace(/\n/g, ' ') : 'Not Specified';
-    const safeScores = (scores && scores.trim() !== '') ? scores.replace(/\n/g, ' ') : 'Not Specified';
-    const safeExp = (experience && experience.trim() !== '') ? experience.replace(/\n/g, ' ') : 'Not Specified';
-    const safeHobbies = (hobbies && hobbies.trim() !== '') ? hobbies.replace(/\n/g, ' ') : 'Not Specified';
+        pythonProcess.on('close', (code) => {
+            if (code !== 0) {
+                console.error(`Python error: ${errorOutput}`);
+                return res.status(500).json({ error: 'Failed to generate resume analysis.' });
+            }
+            res.json({ result: result.trim() });
+        });
 
-    pythonProcess.stdin.write(`${safeGoal}\n`);
-    pythonProcess.stdin.write(`${safeSkills}\n`);
-    pythonProcess.stdin.write(`${safeScores}\n`);
-    pythonProcess.stdin.write(`${safeExp}\n`);
-    pythonProcess.stdin.write(`${safeHobbies}\n`);
-    pythonProcess.stdin.end();
+        const safeGoal = (goal && goal.trim() !== '') ? goal.replace(/\n/g, ' ') : 'Not Specified';
+        const safeSkills = (skills && skills.trim() !== '') ? skills.replace(/\n/g, ' ') : 'Not Specified';
+        const safeScores = (scores && scores.trim() !== '') ? scores.replace(/\n/g, ' ') : 'Not Specified';
+        const safeExp = (experience && experience.trim() !== '') ? experience.replace(/\n/g, ' ') : 'Not Specified';
+        const safeHobbies = (hobbies && hobbies.trim() !== '') ? hobbies.replace(/\n/g, ' ') : 'Not Specified';
+
+        const marketSkillsStr = marketDemand.skills.join(', ');
+        const coursesStr = JSON.stringify(marketDemand.courses);
+
+        pythonProcess.stdin.write(`${safeGoal}\n`);
+        pythonProcess.stdin.write(`${safeSkills}\n`);
+        pythonProcess.stdin.write(`${safeScores}\n`);
+        pythonProcess.stdin.write(`${safeExp}\n`);
+        pythonProcess.stdin.write(`${safeHobbies}\n`);
+        pythonProcess.stdin.write(`${marketSkillsStr}\n`);
+        pythonProcess.stdin.write(`${coursesStr}\n`);
+        pythonProcess.stdin.end();
+
+    } catch (error) {
+        console.error("Analysis endpoint error:", error);
+        res.status(500).json({ error: "Internal analysis failure." });
+    }
 });
 
 app.listen(port, () => {
