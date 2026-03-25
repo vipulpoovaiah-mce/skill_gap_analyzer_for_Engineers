@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillGap AI | Premium Resume Analyzer</title>
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Abstract Background Elements for Aesthetics -->
+    <div class="bg-blur shape-1"></div>
+    <div class="bg-blur shape-2"></div>
+    <div class="bg-blur shape-3"></div>
+
+    <header class="navbar">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="url(#paint0_linear)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="paint0_linear" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#fff"/>
+                            <stop offset="1" stop-color="#e0e7ff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+            <span class="logo-text">SkillGap <span class="gradient-text">AI</span></span>
+        </div>
+        <nav class="nav-links">
+            <a href="#">How it works</a>
+            <a href="#">Features</a>
+            <button class="signin-btn">Dashboard</button>
+        </nav>
+    </header>
+
+    <main class="main-container">
+        <!-- Sidebar container -->
+        <div class="sidebar-wrapper glass-panel">
+            
+            <div class="upload-card">
+                <input type="file" id="resumeUpload" accept=".pdf,.txt,.docx" style="display:none;" onchange="handleFileUpload(event)">
+                <label for="resumeUpload" class="upload-area">
+                    <div class="upload-icon-wrapper pulse-animation">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <polyline points="9 15 12 12 15 15"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Upload Resume</h3>
+                    <p>PDF or TXT &bull; AI Parsing</p>
+                </label>
+                <div id="uploadStatus" class="upload-status" style="display:none;"></div>
+            </div>
+
+            <aside class="sidebar-content">
+                <div class="sidebar-header">
+                    <h2>PROFILE CONTEXT</h2>
+                    <button class="clear-all" onclick="clearForm()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form id="profileForm">
+                    <div class="input-group">
+                        <label>Target Role</label>
+                        <input type="text" id="goal" placeholder="e.g. Senior Data Scientist">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Current Skills (Detected)</label>
+                        <input type="text" id="skills" placeholder="Skills will auto-populate">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Experience Details</label>
+                        <textarea id="experience" placeholder="Paste additional context or achievements..."></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Certificates</label>
+                        <input type="text" id="scores" placeholder="e.g. AWS Certified, Top 10 Kaggle">
+                    </div>
+
+                    <button type="button" class="generate-btn" onclick="generateAnalysis()">
+                        <span class="btn-text">Generate Roadmap</span>
+                        <svg class="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+            </aside>
+        </div>
+
+        <!-- Main Results Area -->
+        <section class="content-area glass-panel" id="resultArea">
+            <div class="empty-state">
+                <div class="target-icon float-animation">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M22 12h-4"></path>
+                        <path d="M6 12H2"></path>
+                        <path d="M12 2v4"></path>
+                        <path d="M12 22v-4"></path>
+                    </svg>
+                </div>
+                <h2>Awaiting Analysis</h2>
+                <p>Upload a resume or fill in your details to discover your personalized skills gap roadmap against industry demand.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
