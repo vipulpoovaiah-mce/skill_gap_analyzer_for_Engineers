@@ -2,45 +2,46 @@ import sys
 import json
 from resume_analyzer import ResumeAnalyzer
 
+
 def main():
     try:
         lines = sys.stdin.read().splitlines()
-        # Expecting: goal, skills, scores, experience, hobbies, market_skills (comma separated), courses (json string)
-        if len(lines) >= 7:
+        # Expecting: goal, skills, scores, experience, market_skills (comma separated), courses (json string)
+        if len(lines) >= 6:
             goal = lines[0]
             skills_raw = lines[1]
             scores = lines[2]
             experience = lines[3]
-            hobbies = lines[4]
-            market_skills_raw = lines[5]
-            courses_raw = lines[6]
+            market_skills_raw = lines[4]
+            courses_raw = lines[5]
         else:
             goal = lines[0] if len(lines) > 0 else ""
             skills_raw = lines[1] if len(lines) > 1 else ""
+            scores = lines[2] if len(lines) > 2 else ""
             experience = lines[3] if len(lines) > 3 else ""
             market_skills_raw = ""
             courses_raw = "[]"
-            
+
         market_skills = [s.strip() for s in market_skills_raw.split(',') if s.strip()]
         try:
             courses = json.loads(courses_raw)
-        except:
+        except Exception:
             courses = []
-            
+
         combined_text = f"{goal} {skills_raw} {experience}"
-        
+
         analyzer = ResumeAnalyzer()
         # 1. Extract skills from text
         found_skills = set(analyzer.analyze(combined_text))
-        
+
         # 2. Add skills from the manual input field (comma separated)
         manual_skills = [s.strip() for s in skills_raw.split(',') if s.strip()]
         for ms in manual_skills:
             if ms.lower() != "not specified":
                 found_skills.add(ms)
-                
+
         roadmap = analyzer.generate_roadmap(list(found_skills), market_skills)
-        
+
         # We print HTML exactly like app.py did, so index.js sends it back as {result: "html"}
         result_html = f'''
         <div style="animation: fadeIn 0.5s ease-out;">
@@ -85,13 +86,14 @@ def main():
             </div>
         </div>
         '''
-        
+
         # Write to stdout cleanly
         sys.stdout.write(result_html)
-        
+
     except Exception as e:
         sys.stderr.write(str(e))
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

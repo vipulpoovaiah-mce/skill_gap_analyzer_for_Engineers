@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In | SkillGap</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="bg-blur shape-1"></div>
+    <div class="bg-blur shape-2"></div>
+
+    <main class="wrap">
+        <div class="card">
+            <div class="brand">
+                <div class="logo">SkillGap</div>
+                <div class="tag">Sign in to keep your roadmap history.</div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab tab-active" id="tabLogin" onclick="showAuthTab('login')">Login</button>
+                <button class="tab" id="tabRegister" onclick="showAuthTab('register')">Create account</button>
+            </div>
+
+            <div id="msg" class="msg" style="display:none;"></div>
+
+            <div id="loginPanel" class="panel panel-active">
+                <label class="lbl">Username</label>
+                <input class="inp" id="loginUsername" placeholder="Username" />
+                <label class="lbl">Password</label>
+                <input class="inp" id="loginPassword" type="password" placeholder="••••••••" />
+                <button class="btn" onclick="login()">Login</button>
+            </div>
+
+            <div id="registerPanel" class="panel">
+                <label class="lbl">Username</label>
+                <input class="inp" id="regUsername" placeholder="3-32 characters" />
+                <label class="lbl">Password</label>
+                <input class="inp" id="regPassword" type="password" placeholder="min 6 characters" />
+                <button class="btn" onclick="register()">Create account</button>
+            </div>
+
+            <button class="btn btn-secondary" onclick="continueAsGuest()">Try without account</button>
+
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

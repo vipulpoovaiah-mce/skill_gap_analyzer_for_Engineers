@@ -1,0 +1,153 @@
+/* Custom styles for How It Works page */
+@import url('/style.css');
+
+.page-content {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 0 40px;
+    background: transparent;
+    backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+}
+
+.how-it-works-hero {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.how-it-works-hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+}
+
+.how-it-works-hero p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+}
+
+.steps-container {
+    display: flex;
+    flex-direction: column;
+    gap: 100px;
+}
+
+.step-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.step-section:nth-child(even) {
+    direction: rtl;
+}
+
+.step-section:nth-child(even) .step-text {
+    direction: ltr;
+}
+
+.step-text h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.step-number {
+    width: 45px;
+    height: 45px;
+    background: var(--accent-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+.step-text p {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+/* Image Placeholder Styling */
+.image-placeholder {
+    width: 100%;
+    aspect-ratio: 16/10;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.image-placeholder::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--accent-gradient);
+    opacity: 0.03;
+    z-index: 0;
+}
+
+.image-placeholder:hover {
+    border-color: var(--accent-primary);
+    background: rgba(139, 92, 246, 0.05);
+}
+
+.placeholder-icon {
+    font-size: 3rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.placeholder-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.back-btn-top {
+    position: fixed;
+    top: 100px;
+    left: 48px;
+    z-index: 100;
+}
+
+.back-btn-top a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.back-btn-top a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-primary);
+    transform: translateX(-5px);
+}
+
+@media (max-width: 968px) {
+    .step-section, .step-section:nth-child(even) {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        gap: 30px;
+    }
+}
